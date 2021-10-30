@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// TODO update preview image
-
 #include QMK_KEYBOARD_H
 
 #define _BASE 1    // 0b00000001
