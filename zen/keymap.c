@@ -16,16 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// TODO update preview image
+
 #include QMK_KEYBOARD_H
 
-#define _BASE 1
-#define _LOWER 2
-#define _RAISE 4
-#define _ADJUST 8
+#define _BASE 1    // 0b00000001
+#define _LOWER 2   // 0b00000010
+#define _RAISE 4   // 0b00000100
+#define _ADJUST 8  // 0b00001000
 
-enum my_layer_keycodes {
+enum custom_keycodes {
   KC_LRAISE = SAFE_RANGE,
-  KC_LLOWER
+  KC_LLOWER,
+  KC_DESK_LEFT,
+  KC_DESK_RIGHT
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -44,7 +48,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_ESCAPE,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_BSPC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSHIFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_LEFT, KC_DOWN,   KC_UP,KC_RIGHT, XXXXXXX, XXXXXXX,
+      KC_LSHIFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_LEFT, KC_DOWN,   KC_UP,KC_RIGHT, KC_DESK_LEFT, KC_DESK_RIGHT,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTRL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_TAB,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
@@ -76,9 +80,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                       //`--------------------------'  `--------------------------'
   )
 };
-
-//#include <numeric>
-#ifdef OLED_ENABLE
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   if (!is_keyboard_master()) {
@@ -267,6 +268,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         raise_on = false;
       }
       break;
+    case KC_DESK_LEFT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LGUI)SS_TAP(X_LEFT)SS_UP(X_LCTL)SS_UP(X_LGUI));
+      }
+      break;
+    case KC_DESK_RIGHT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_DOWN(X_LCTL)SS_DOWN(X_LGUI)SS_TAP(X_RIGHT)SS_UP(X_LCTL)SS_UP(X_LGUI));
+      }
+      break;
     }
 
   if (lower_on && raise_on) {
@@ -281,4 +292,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   return true;
 }
-#endif // OLED_ENABLE
+
+void keyboard_post_init_user(void) {
+  layer_state_set(_BASE);
+}
