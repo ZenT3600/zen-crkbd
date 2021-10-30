@@ -167,16 +167,36 @@ void render_bootmagic_status(bool status) {
 #include "animations.h"
 #include "decompress.c"
 
-static void oled_render_logo_0(void) {
+static void oled_render_logo_bongo_0(void) {
     oled_write_compressed_P(bongo_0_block_x_map, bongo_0_block_x_list);
 }
 
-static void oled_render_logo_1(void) {
+static void oled_render_logo_bongo_1(void) {
     oled_write_compressed_P(bongo_1_block_x_map, bongo_1_block_x_list);
 }
 
-static void oled_render_logo_2(void) {
+static void oled_render_logo_bongo_2(void) {
     oled_write_compressed_P(bongo_2_block_x_map, bongo_2_block_x_list);
+}
+
+static void oled_render_logo_git_0(void) {
+    oled_write_compressed_P(git_0_block_x_map, git_0_block_x_list);
+}
+
+static void oled_render_logo_git_1(void) {
+    oled_write_compressed_P(git_1_block_x_map, git_1_block_x_list);
+}
+
+static void oled_render_logo_git_2(void) {
+    oled_write_compressed_P(git_2_block_x_map, git_2_block_x_list);
+}
+
+static void oled_render_logo_git_3(void) {
+    oled_write_compressed_P(git_3_block_x_map, git_3_block_x_list);
+}
+
+static void oled_render_logo_git_4(void) {
+    oled_write_compressed_P(git_4_block_x_map, git_4_block_x_list);
 }
 
 static void oled_render_locks(void) {
@@ -192,25 +212,28 @@ static void oled_render_locks(void) {
 	oled_write_ln("", false);
 }
 
-uint8_t animation_type_index = 0;
+#define ANIMATION_TYPE 0
+
 typedef void (*func_type)(void);
 uint32_t animation_timer = 0;
-uint16_t animation_delay[1][5] = {
+uint16_t animation_delay[2][5] = {
   {1500, 200, 300, 200, 300},
+  {350, 350, 350, 100, 350},
 };
-static func_type animation_funcs[1][5] = {
-  {&oled_render_logo_0, &oled_render_logo_1, &oled_render_logo_2, &oled_render_logo_1, &oled_render_logo_2},
+static func_type animation_funcs[2][5] = {
+  {&oled_render_logo_bongo_0, &oled_render_logo_bongo_1, &oled_render_logo_bongo_2, &oled_render_logo_bongo_1, &oled_render_logo_bongo_2},
+  {&oled_render_logo_git_0, &oled_render_logo_git_1, &oled_render_logo_git_2, &oled_render_logo_git_3, &oled_render_logo_git_4},
 };
 uint8_t animation_index = 0;
 
 bool master_oled_alive = true;
 
 void oled_render_animation(void) {
-	if (timer_elapsed32(animation_timer) > animation_delay[animation_type_index][animation_index]) {
+	if (timer_elapsed32(animation_timer) > animation_delay[ANIMATION_TYPE][animation_index]) {
 		animation_index = (animation_index + 1) % 5;
 		animation_timer = timer_read32();
 	}
-	animation_funcs[animation_type_index][animation_index]();
+	animation_funcs[ANIMATION_TYPE][animation_index]();
 }
 
 void oled_task_user(void) {

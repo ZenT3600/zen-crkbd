@@ -10,7 +10,9 @@
 
 ### Logo / Screen Saver
 
-![Bongo Cat](/logo.gif)
+![Bongo Cat](/logo_bongo.gif)
+
+![Git](/logo_git.gif)
 
 ### IRL Preview
 
